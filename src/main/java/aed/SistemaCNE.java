@@ -1,8 +1,5 @@
 package aed;
 
-import Clases.Nodo;
-import Clases.array;
-
 public class SistemaCNE {
     // Completar atributos privados
 

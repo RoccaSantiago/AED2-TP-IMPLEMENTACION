@@ -16,7 +16,9 @@ public class HeapSistema {
     public HeapSistema(int[] array) {
         size = 0;
         capacidad = array.length;
-        for (int i = 0; i < size; i++) {
+        heap = new int[capacidad];
+        indices = new int[capacidad];
+        for (int i = 0; i < capacidad; i++) {
             this.agregar(array[i], i);
         }
     }
