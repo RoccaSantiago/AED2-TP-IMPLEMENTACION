@@ -18,6 +18,8 @@ public class SistemaCNE {
     // private heap hayBallotage; Despues lo ponemos cuando el heap este listo
 
     private int[] hayBallotage; // 3 elementos, [0] Maximo, [1] Segundo Maximo, [2] votos totales, tambien pude ser un vector @Gonza
+
+    private int[] mesasRegistradas;
     
 
     public class VotosPartido{
@@ -36,6 +38,10 @@ public class SistemaCNE {
         this.nombresDistritos = new String[nombresDistritos.length];
         this.diputadosDeDistrito = new int[diputadosPorDistrito.length];
         this.rangoMesasDistritos = new int[ultimasMesasDistritos.length];
+        
+        //hecho @RoccaSantiago
+        this.votosPresidenciales = new int[nombresPartidos.length];
+        this.votosDiputados = new int[nombresDistritos.length][nombresPartidos.length];
 
         // input de nombresPartidos
 
@@ -65,8 +71,9 @@ public class SistemaCNE {
     public int diputadosEnDisputa(int idDistrito) {
         return diputadosDeDistrito[idDistrito];
     }
-    
-    public int obtenerIdDistricto(int idMesa) {
+
+    //hecho @maximilianofisz
+    public int obtenerIdDistrito(int idMesa) {
         int capacidadOriginal = rangoMesasDistritos.length;
         int mitadSegmento = capacidadOriginal / 2;
         while(true) {
@@ -105,43 +112,71 @@ public class SistemaCNE {
         }
     }
 
+    //hecho @maximilianofisz
     public String distritoDeMesa(int idMesa) {
-       return nombresDistritos[obtenerIdDistricto(idMesa)];
+       return nombresDistritos[obtenerIdDistrito(idMesa)];
     }
 
+    // hecho @RoccaSantiago
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
+        
         // Consigo el Id del districto.
-        int idDis = obtenerIdDistricto(idMesa);
+        int idDis = obtenerIdDistrito(idMesa);
         
         // Registra votos presidenciales
         
         for (int IdPartido=0; IdPartido<actaMesa.length; IdPartido++){
-
             votosDiputados[idDis][IdPartido] += actaMesa[IdPartido].diputados;
             votosPresidenciales[IdPartido] += actaMesa[IdPartido].presidente; 
         }
-    
 
-        
-
-
-        
-        
-
-        
     }
 
+
+    // hecho @RoccaSantiago
     public int votosPresidenciales(int idPartido) {
-        return votosPresidenciales[idPartido];
+        return votosPresidenciales[idPartido];  
     }
 
+    // hecho @RoccaSantiago
     public int votosDiputados(int idPartido, int idDistrito) {
         return votosDiputados[idDistrito][idPartido];
     }
 
-    public int[] resultadosDiputados(int idDistrito){
-        throw new UnsupportedOperationException("No implementada aun");
+
+    //FALTA HACER=========================================================================================================
+    private int[] calcularDhont(int[] escrutinio, int bancas){
+        int[] res = new int[nombresPartidos.length-1];
+
+        int bancasAsignadas = 0;
+        
+       
+        while (bancasAsignadas<=bancas) {
+            
+            while(true) {   
+                    
+                //PARTIDOS LOG(P)
+            }
+
+
+            
+        }
+
+
+
+
+
+        return res;
     }
+
+
+
+    public int[] resultadosDiputados(int idDistrito){
+        
+        return calcularDhont(votosDiputados[idDistrito],diputadosEnDisputa(idDistrito));
+    }
+
+    //FALTA HACER=========================================================================================================
 
     public boolean hayBallotage(){ // Si quedamos con el heap despues se cambian las asignaciones solamente @Gonza
         int votosTotales = hayBallotage[2];
