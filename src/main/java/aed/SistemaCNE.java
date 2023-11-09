@@ -48,7 +48,7 @@ public class SistemaCNE {
         for (int i = 0; i<nombresDistritos.length; i++){
             this.nombresDistritos[i] = nombresDistritos[i];
             this.diputadosDeDistrito[i] = diputadosPorDistrito[i];
-            this.rangoMesasDistritos[i] = ultimasMesasDistritos[i] - 1;
+            this.rangoMesasDistritos[i] = ultimasMesasDistritos[i];
 
 
             // Pensado con rangoMesasDistritos como matriz y no como array @Gonza
@@ -77,14 +77,14 @@ public class SistemaCNE {
         return diputadosDeDistrito[idDistrito];
     }
 
-    public String distritoDeMesa(int idMesa) {
+/*     public String distritoDeMesa(int idMesa) {
         int n = nombresDistritos.length/2;
         n = this.bbDistritodeMesa(idMesa, n);
         return nombreDistrito(n);
 
-    }
+    } */
 
-    private int bbDistritodeMesa(int idMesa, int n){ // Mi intento de busqueda binaria, no se si hace division entera el / porfa diganme si no lo hace @Gonza
+    /* private int bbDistritodeMesa(int idMesa, int n){ // Mi intento de busqueda binaria, no se si hace division entera el / porfa diganme si no lo hace @Gonza
         if (rangoMesasDistritos[n] > idMesa){
 
             if (n == 0){
@@ -112,6 +112,45 @@ public class SistemaCNE {
             }
         }
         return n;
+    } */
+
+    public String distritoDeMesa(int idMesa) {
+        int capacidadOriginal = rangoMesasDistritos.length;
+        int mitadSegmento = capacidadOriginal / 2;
+        while(true) {
+
+            // El id esta en el primero
+            if(mitadSegmento == 0 ) {
+                return nombreDistrito(0);
+            }
+
+            // El id esta en el anterior
+            if(idMesa >= rangoMesasDistritos[mitadSegmento - 1] && idMesa < rangoMesasDistritos[mitadSegmento]) {
+                return nombreDistrito(mitadSegmento);
+            }
+
+            // El Id esta en el actual
+            if(idMesa >= rangoMesasDistritos[mitadSegmento] && idMesa < rangoMesasDistritos[mitadSegmento + 1]) {
+                return nombreDistrito(mitadSegmento + 1);
+            }
+
+            // El Id esta en el ultimo
+            if(idMesa >= rangoMesasDistritos[mitadSegmento + 1] && mitadSegmento + 1 == capacidadOriginal - 1) {
+                return nombreDistrito(capacidadOriginal - 1);
+            }
+
+            // IdMesa es menor
+            if(idMesa < rangoMesasDistritos[mitadSegmento]) {
+                mitadSegmento = mitadSegmento / 2;
+                continue;
+            }
+
+            // IdMesa es mayor
+            if(idMesa >= rangoMesasDistritos[mitadSegmento]) {
+                mitadSegmento = mitadSegmento + (mitadSegmento/2 + 1);
+                continue;
+            }
+        }
     }
 
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
