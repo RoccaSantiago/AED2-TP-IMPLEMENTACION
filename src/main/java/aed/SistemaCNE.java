@@ -49,17 +49,6 @@ public class SistemaCNE {
             this.nombresDistritos[i] = nombresDistritos[i];
             this.diputadosDeDistrito[i] = diputadosPorDistrito[i];
             this.rangoMesasDistritos[i] = ultimasMesasDistritos[i];
-
-
-            // Pensado con rangoMesasDistritos como matriz y no como array @Gonza
-            //if (i > 0){
-            //    this.rangoMesasDistritos[i][0] = ultimasMesasDistritos[i-1];
-            //    this.rangoMesasDistritos[i][1] = ultimasMesasDistritos[i];
-            //}
-            //else {
-            //    this.rangoMesasDistritos[0][0] = 0;
-            //    this.rangoMesasDistritos[0][1] = ultimasMesasDistritos[0];
-            //}
         }
 
 
@@ -76,67 +65,30 @@ public class SistemaCNE {
     public int diputadosEnDisputa(int idDistrito) {
         return diputadosDeDistrito[idDistrito];
     }
-
-/*     public String distritoDeMesa(int idMesa) {
-        int n = nombresDistritos.length/2;
-        n = this.bbDistritodeMesa(idMesa, n);
-        return nombreDistrito(n);
-
-    } */
-
-    /* private int bbDistritodeMesa(int idMesa, int n){ // Mi intento de busqueda binaria, no se si hace division entera el / porfa diganme si no lo hace @Gonza
-        if (rangoMesasDistritos[n] > idMesa){
-
-            if (n == 0){
-                return n;
-            }
-            else if (rangoMesasDistritos[n-1] < idMesa){
-                return n;
-            }
-            else {
-            n = n - n / 2; // me complique con este facor, lo demas funciona bien
-            return bbDistritodeMesa(idMesa, n);
-            }
-        }
-        else if (rangoMesasDistritos[n] < idMesa){
-
-            if (n == nombresDistritos.length - 1){
-                return n;
-            }
-            else if (rangoMesasDistritos[n+1] > idMesa){
-                return (n+1);
-            }
-            else {
-            n = n + n/2; // este factor tambien
-            return bbDistritodeMesa(idMesa, n);
-            }
-        }
-        return n;
-    } */
-
-    public String distritoDeMesa(int idMesa) {
+    
+    public int obtenerIdDistricto(int idMesa) {
         int capacidadOriginal = rangoMesasDistritos.length;
         int mitadSegmento = capacidadOriginal / 2;
         while(true) {
 
             // El id esta en el primero
             if(mitadSegmento == 0 ) {
-                return nombreDistrito(0);
+                return mitadSegmento;
             }
 
             // El id esta en el anterior
             if(idMesa >= rangoMesasDistritos[mitadSegmento - 1] && idMesa < rangoMesasDistritos[mitadSegmento]) {
-                return nombreDistrito(mitadSegmento);
+                return mitadSegmento;
             }
 
             // El Id esta en el actual
             if(idMesa >= rangoMesasDistritos[mitadSegmento] && idMesa < rangoMesasDistritos[mitadSegmento + 1]) {
-                return nombreDistrito(mitadSegmento + 1);
+                return mitadSegmento+1;
             }
 
             // El Id esta en el ultimo
             if(idMesa >= rangoMesasDistritos[mitadSegmento + 1] && mitadSegmento + 1 == capacidadOriginal - 1) {
-                return nombreDistrito(capacidadOriginal - 1);
+                return capacidadOriginal - 1;
             }
 
             // IdMesa es menor
@@ -153,16 +105,38 @@ public class SistemaCNE {
         }
     }
 
+    public String distritoDeMesa(int idMesa) {
+       return nombresDistritos[obtenerIdDistricto(idMesa)];
+    }
+
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
-        throw new UnsupportedOperationException("No implementada aun");
+        // Consigo el Id del districto.
+        int idDis = obtenerIdDistricto(idMesa);
+        
+        // Registra votos presidenciales
+        
+        for (int IdPartido=0; IdPartido<actaMesa.length; IdPartido++){
+
+            votosDiputados[idDis][IdPartido] += actaMesa[IdPartido].diputados;
+            votosPresidenciales[IdPartido] += actaMesa[IdPartido].presidente; 
+        }
+    
+
+        
+
+
+        
+        
+
+        
     }
 
     public int votosPresidenciales(int idPartido) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return votosPresidenciales[idPartido];
     }
 
     public int votosDiputados(int idPartido, int idDistrito) {
-        throw new UnsupportedOperationException("No implementada aun");
+        return votosDiputados[idDistrito][idPartido];
     }
 
     public int[] resultadosDiputados(int idDistrito){
