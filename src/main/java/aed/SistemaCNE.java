@@ -19,9 +19,6 @@ public class SistemaCNE {
 
     private int[] hayBallotage; // 3 elementos, [0] Maximo, [1] Segundo Maximo, [2] votos totales, tambien pude ser un vector @Gonza
 
-    private int[] mesasRegistradas;
-    
-
     public class VotosPartido{
         private int presidente;
         private int diputados;
@@ -30,8 +27,15 @@ public class SistemaCNE {
         public int votosDiputados(){return diputados;}
     }
 
+    //La complejidad de SistemnaCNE es O(P+D) que pertene a O(P*D), debido a que primero incializamos los arrays que cuesta O(1), para luego realizar dos ciclos, no anidados, el cual el primero asigna los nombres de partidos que cuesta O(P) 
+    // y despues el ciclo que inserta todo lo relacionado a los diputados y los dristictos; que como cota de ciclo tiene a la longitud D luego cuesta O(D).
+    // Por lo tanto la suma de estos resultaria en O(D+P) y este pertenece a O(P*D) ya que este ultimo crece mucho mas rapido que el crecimiento lineal que tiene O(P+D).
+
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
-        
+         
+
+
+
         //inicializacion de variables
         
         this.nombresPartidos = new String[nombresPartidos.length];
@@ -60,64 +64,71 @@ public class SistemaCNE {
 
     }
 
+    // Es O(1) ya que nombresPartidos es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
+
     public String nombrePartido(int idPartido) {
         return nombresPartidos[idPartido];
     }
+
+
+    // Es O(1) ya que nombresDistrito es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
 
     public String nombreDistrito(int idDistrito) {
         return nombresDistritos[idDistrito];
     }
 
+    // Es O(1) ya que diputadosEnDisputa es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
+
     public int diputadosEnDisputa(int idDistrito) {
         return diputadosDeDistrito[idDistrito];
     }
-
+    
+    
     //hecho @maximilianofisz
+    // La complejidad de esta auxiliar es O(Log(D)) ya que se recorre una secuendai de tamaño D utilizando una busqueda
+    // binaria por lo que la cantidad de elementos a revisar disminuye logaritmicamente
+
+    
     public int obtenerIdDistrito(int idMesa) {
-        int capacidadOriginal = rangoMesasDistritos.length;
-        int mitadSegmento = capacidadOriginal / 2;
-        while(true) {
+        int high = rangoMesasDistritos.length;
+        int low = 0;
+        int actual = 0;
+        while(low != high) {
+            actual = (high + low) / 2;
 
-            // El id esta en el primero
-            if(mitadSegmento == 0 ) {
-                return mitadSegmento;
+            if(rangoMesasDistritos[actual] > idMesa) {
+                if(actual == 0) {
+                    return actual;
+                }
+                else {
+                    if(rangoMesasDistritos[actual - 1] <= idMesa) {
+                        break;
+                    }
+                    if(idMesa < rangoMesasDistritos[actual]) {
+                        high = actual;
+                    }
+
+                }
             }
-
-            // El id esta en el anterior
-            if(idMesa >= rangoMesasDistritos[mitadSegmento - 1] && idMesa < rangoMesasDistritos[mitadSegmento]) {
-                return mitadSegmento;
-            }
-
-            // El Id esta en el actual
-            if(idMesa >= rangoMesasDistritos[mitadSegmento] && idMesa < rangoMesasDistritos[mitadSegmento + 1]) {
-                return mitadSegmento+1;
-            }
-
-            // El Id esta en el ultimo
-            if(idMesa >= rangoMesasDistritos[mitadSegmento + 1] && mitadSegmento + 1 == capacidadOriginal - 1) {
-                return capacidadOriginal - 1;
-            }
-
-            // IdMesa es menor
-            if(idMesa < rangoMesasDistritos[mitadSegmento]) {
-                mitadSegmento = mitadSegmento / 2;
-                continue;
-            }
-
-            // IdMesa es mayor
-            if(idMesa >= rangoMesasDistritos[mitadSegmento]) {
-                mitadSegmento = mitadSegmento + (mitadSegmento/2 + 1);
-                continue;
+            else {
+                low = actual;
             }
         }
+        return actual;
     }
 
     //hecho @maximilianofisz
+    
+    // La complejidad de esta funcion es O(1) * complejidad de la auxiliar
+    // O(1) * O(log(D)) = O(log(D))
     public String distritoDeMesa(int idMesa) {
        return nombresDistritos[obtenerIdDistrito(idMesa)];
     }
 
     // hecho @RoccaSantiago
+
+    //Al hacer la asignacion de IdDis usamos la funcion obtenerIdDistrito en la cual, como dijimos anteriormente, posee complejidad O(Log D). Para luego realizar un ciclo que tiene como cota P, ya que registramos los votos para todos los iD de los partidos.
+    // Por lo tanto obtenemos O(Log D + P)
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
         
         // Consigo el Id del districto.
@@ -134,16 +145,24 @@ public class SistemaCNE {
 
 
     // hecho @RoccaSantiago
+    // Es O(1) ya que votosDiputados es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
     public int votosPresidenciales(int idPartido) {
         return votosPresidenciales[idPartido];  
     }
 
     // hecho @RoccaSantiago
+    // Es O(1) ya que votosDiputados es un array de arrays el cual tiene reservado en memoria todos los id de districtos y pasrtidos. Por lo que acceder a cualquier id cuesta O(1).
     public int votosDiputados(int idPartido, int idDistrito) {
         return votosDiputados[idDistrito][idPartido];
     }
 
 
+
+
+
+
+
+    
     //FALTA HACER=========================================================================================================
     private int[] calcularDhont(int[] escrutinio, int bancas){
         int[] res = new int[nombresPartidos.length-1];
