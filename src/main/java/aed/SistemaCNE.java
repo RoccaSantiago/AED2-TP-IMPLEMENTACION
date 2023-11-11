@@ -3,6 +3,8 @@ package aed;
 public class SistemaCNE {
 
     // D es igual a la cantidad de distritos y P igual a la cantidad de partidos.
+
+    // El invariante de representacion  del modulo  es la sumatoria de las siguientes condiciones:
     private String[] nombresPartidos;  // La longitud de nombresPartidos es P inclusive, los valores no pueden ser nulos y no hay repetidos.
     
     private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive, los valores no pueden ser nulos y no hay repetidos.
@@ -22,7 +24,7 @@ public class SistemaCNE {
     private int votosTotalesPresidente; // Es la sumatoria de todos los elementos de votosPresidenciales. Es mayor o igual a 0.
 
 
-    private HeapSistema[] heapDhondt; // Cada elemento cumple el invariante de HeapSistema o es un elemento null, tiene longitud D.
+    private HeapSistema[] heapDhondt; // Cada elemento cumple el invariante de HeapSistema o es un elemento null, tiene longitud D. Implementado al final.
     
     private int[][] resultadosDhondt; // La longitud es igual a D, cada elemento tiene longitud P y cada subelemento es mayor o igual a 0.
     
@@ -41,13 +43,12 @@ public class SistemaCNE {
     }
 
 
-    //La complejidad de SistemnaCNE es O(P*D) ya que al incializar las variables poseemos operacion u O(P) u O(D) hasta  resultadosDhondt que es un matriz que al reservar memoria es P*D entonces este al ser el maximo el algoritmo pasa a tener complejidad O(P*D)
-    //Luego aplicamos un for con complejidad O(P) y luego uno con O(D). De todas estas operaciones solo importa O(P*D).
-
+    // La complejidad de SistemnaCNE es O(P*D) ya que al incializar las variables poseemos operacion u O(P) u O(D)
+    // hasta resultadosDhondt que es un matriz que al reservar memoria, su complejidad sera de O(P*D).
+    // Luego aplicamos un for con complejidad O(P) y luego uno con O(D). La complejidad mas alta termina siendo O(P*D).
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
          
         //inicializacion de variables
-        
         this.nombresPartidos = new String[nombresPartidos.length];
         this.nombresDistritos = new String[nombresDistritos.length];
         this.diputadosDeDistrito = new int[diputadosPorDistrito.length];
@@ -67,13 +68,11 @@ public class SistemaCNE {
         this.hayBallotageIndice = new int[2];
 
         // input de Partidos
-
         for (int i = 0; i < nombresPartidos.length; i++) {
             this.nombresPartidos[i] = nombresPartidos[i];
         }
 
         // input de Distritos
-
         for (int i = 0; i < nombresDistritos.length; i++) {
             this.nombresDistritos[i] = nombresDistritos[i];
             this.diputadosDeDistrito[i] = diputadosPorDistrito[i];
@@ -82,37 +81,30 @@ public class SistemaCNE {
     }
 
     // Es O(1) ya que nombresPartidos es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
-
     public String nombrePartido(int idPartido) {
         return nombresPartidos[idPartido];
     }
 
 
     // Es O(1) ya que nombresDistrito es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
-
     public String nombreDistrito(int idDistrito) {
         return nombresDistritos[idDistrito];
     }
 
     // Es O(1) ya que diputadosEnDisputa es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
-
     public int diputadosEnDisputa(int idDistrito) {
         return diputadosDeDistrito[idDistrito];
     }
     
     
-    //hecho @maximilianofisz
-    // La complejidad de esta auxiliar es O(Log(D)) ya que se recorre una secuendai de tamaño D utilizando una busqueda
+    // La complejidad de esta auxiliar es O(Log(D)) ya que se recorre una secuencia de tamaño D utilizando una busqueda
     // binaria por lo que la cantidad de elementos a revisar disminuye logaritmicamente
-
-    
     public int obtenerIdDistrito(int idMesa) {
         int high = rangoMesasDistritos.length;
         int low = 0;
         int actual = 0;
 
         //Realiza busqueda binaria para hallar el id del districto.
-
         while(low != high) {
             actual = (high + low) / 2;
 
@@ -137,18 +129,15 @@ public class SistemaCNE {
         return actual;
     }
 
-    //hecho @maximilianofisz
-    
     // La complejidad de esta funcion es O(1) * complejidad de la auxiliar
     // O(1) * O(log(D)) = O(log(D))
-
     public String distritoDeMesa(int idMesa) {
        return nombresDistritos[obtenerIdDistrito(idMesa)];
     }
 
-    //Al hacer la asignacion de IdDis usamos la funcion obtenerIdDistrito en la cual, como dijimos anteriormente, posee complejidad O(Log D). Para luego realizar un ciclo que tiene como cota P, ya que registramos los votos para todos los iD de los partidos.
-    // Por lo tanto obtenemos O(Log D + P)
-
+    //Al hacer la asignacion de Ids usamos la funcion obtenerIdDistrito en la cual, como dijimos anteriormente, posee complejidad O(Log D).
+    // Para luego realizar un ciclo que tiene como cota P, ya que registramos los votos para todos los Ids de los partidos.
+    // Por lo tanto obtenemos O(Log D + P).
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
         
         // Consigo el Id del districto.
@@ -187,16 +176,17 @@ public class SistemaCNE {
     }
 
     // Es O(1) ya que votosDiputados es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
-
     public int votosPresidenciales(int idPartido) {
         return votosPresidenciales[idPartido];  
     }
 
-    // Es O(1) ya que votosDiputados es un array de arrays el cual tiene reservado en memoria todos los id de districtos y pasrtidos. Por lo que acceder a cualquier id cuesta O(1).
+    // Es O(1) ya que votosDiputados es un array de arrays el cual tiene reservado en memoria todos los id de distritos y partidos. Por lo que acceder a cualquier id cuesta O(1).
     public int votosDiputados(int idPartido, int idDistrito) {
         return votosDiputados[idDistrito][idPartido];
     }
     
+    // La complejidad de esta operación es O(Dd*log(P)) ya que tenemos que iterar Dd, la cantidad de bancas de un distrito y por cada una de 
+    // ellas agregar al heap el valor asociado al calculo de Dhont que tiene complejidad O(log(P)). Entonces nos quda complejidad O(Dd*log(P)).
     public int[] resultadosDiputados(int idDistrito) {
 
         if (!hayResultadosDhondt[idDistrito]){
@@ -237,6 +227,7 @@ public class SistemaCNE {
 
     }
 
+    // Es O(1) ya solo se realizan accesos a arrays que ya estan en memorias y otras operaciones O(1).
     public boolean hayBallotage() {
         int votosTotales = votosTotalesPresidente;
         int max1 = votosPresidenciales[hayBallotageIndice[0]];
@@ -256,6 +247,9 @@ public class SistemaCNE {
     }
 
 
+
+
+    // Implementacion de Heap.
     private class HeapSistema {
         private int[] heap;
         private int[] indices;
@@ -338,7 +332,7 @@ public class SistemaCNE {
                 heapifyBajar(indiceMaximo); // El elemento va a intentar seguir bajando hasta que no pueda más
             }
         }
-    
+        
         public void agregar(int valor, int indice, int valorOriginal) {
             heap[size] = valor; // Agrega fuera del tamaño del array pero no de la capacidad del array
             indices[size] = indice; //ASDFasfdfe
