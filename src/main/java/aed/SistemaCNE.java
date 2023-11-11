@@ -248,16 +248,15 @@ public class SistemaCNE {
         private int[] indices;
         private int[] valoresOriginales;
         private int size;
-        private int capacidad;
     
         public HeapSistema(int[] array) {
             size = array.length;
-            capacidad = size;
-            heap = new int[capacidad];
-            //for (int i        crear un for en lugar de usar arraycopy 
-            System.arraycopy(array, 0, heap, 0, size);
-            indices = new int[capacidad];
-            valoresOriginales = new int[capacidad];
+            heap = new int[size];
+            for (int i = 0; i < size; i++) {
+                heap[i] = array[i];
+            }
+            indices = new int[size];
+            valoresOriginales = new int[size];
             
             for (int i = 0; i < size; i++) {
                 indices[i] = i;
