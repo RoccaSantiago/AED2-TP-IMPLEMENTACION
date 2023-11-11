@@ -10,14 +10,14 @@ public class SistemaCNE {
     private int[] votosPresidenciales;
     private int[][] votosDiputados;
 
-    private int[] hayBallotageIndice;
-
     private int[] votosTotalesDiputados; // Indice es el distrito
     private int votosTotalesPresidente;
 
     private HeapSistema[] heapDhondt;
     private int[][] resultadosDhondt;
     private boolean[] hayResultadosDhondt;
+
+    private int[] hayBallotageIndice;
 
     public class VotosPartido{
         private int presidente;
