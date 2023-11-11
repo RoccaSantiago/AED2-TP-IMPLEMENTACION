@@ -469,5 +469,6 @@ class SistemaCNETests {
         for (int idDistrito = 0; idDistrito < cantDistritos; idDistrito++){ 
             sistema.resultadosDiputados(idDistrito);
         }
+
     }
 }
