@@ -1,23 +1,36 @@
 package aed;
 
 public class SistemaCNE {
-    // Completar atributos privados
 
-    private String[] nombresPartidos; // La longitud de nombresPartidos es P inclusive.
-    private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive.
-    private int[] diputadosDeDistrito; // Todo los elementos son mayores a 0.
+    // D es igual a la cantidad de distritos y P igual a la cantidad de partidos.
+    private String[] nombresPartidos;  // La longitud de nombresPartidos es P inclusive, los valores no pueden ser nulos y no hay repetidos.
+    
+    private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive, los valores no pueden ser nulos y no hay repetidos.
+    
+    private int[] diputadosDeDistrito; // La longitud es igual a D, todo los elementos son mayores o iguales 0.
+    
     private int[] rangoMesasDistritos; // No hay repetidos, estan en orden ascendente y son todos valores mayores a 0.
-    private int[] votosPresidenciales; // Todos los elementos son mayores o iguales a 0 y su longitud es P
-    private int[][] votosDiputados; // La longitud es igual D, cada elemento tiene longitud P y cada subelemento de un elementom es mayor o igual a 0.
+    
+    private int[] votosPresidenciales; // Todos los elementos son mayores o iguales a 0 y su longitud es P. 
+                                       // Cada índice es el total actual de votos de un partido a nivel nacional que se modifica con la operación registrar mesas
+    
+    private int[][] votosDiputados; // La longitud es igual D, cada elemento tiene longitud P y cada subelemento de un elemento es mayor o igual a 0.
+                                    // Cada elemento corresponde a un distrito y cada subelemento corresponde a la sumatoria actual de votos de diputados de un partido del elemento.
 
     private int[] votosTotalesDiputados; // Posee longitud D y cada elemento es la sumatoria de todos los valores en cada elemento de votosDiputados, tiene que ser mayor o igual a 0.
+    
     private int votosTotalesPresidente; // Es la sumatoria de todos los elementos de votosPresidenciales. Es mayor o igual a 0.
 
 
-    private HeapSistema[] heapDhondt;
-    private int[][] resultadosDhondt;
-    private boolean[] hayResultadosDhondt;
-    private int[] hayBallotageIndice;
+    private HeapSistema[] heapDhondt; // Cada elemento cumple el invariante de HeapSistema o es un elemento null, tiene longitud D.
+    
+    private int[][] resultadosDhondt; // La longitud es igual a D, cada elemento tiene longitud P y cada subelemento es mayor o igual a 0.
+    
+    private boolean[] hayResultadosDhondt; // La longitud es igual a D
+                                           // Para cada 0 <= i < longitud de hayResultadosDhondt se cumple que hayResultadosDhondt[i] == True si y solo si existe algun elemento en resultadosDhondt[i] que sea distinto a 0.
+    
+    private int[] hayBallotageIndice; // La longitud es igual a 2
+                                      // hayBallotageIndice[0] es el indice del elemento maximo en votosPrecidenciales y hayBallotageIndice[1] es el indice del segundo elemento maximo en votosPrecidenciales, o ambos son 0.
 
     public class VotosPartido{
         private int presidente;
@@ -173,7 +186,6 @@ public class SistemaCNE {
         return res;
     }
 
-    // hecho @RoccaSantiago
     // Es O(1) ya que votosDiputados es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
 
     public int votosPresidenciales(int idPartido) {
