@@ -3,20 +3,20 @@ package aed;
 public class SistemaCNE {
     // Completar atributos privados
 
-    private String[] nombresPartidos;
-    private String[] nombresDistritos;
-    private int[] diputadosDeDistrito;
-    private int[] rangoMesasDistritos;
-    private int[] votosPresidenciales;
-    private int[][] votosDiputados;
+    private String[] nombresPartidos; // La longitud de nombresPartidos es P inclusive.
+    private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive.
+    private int[] diputadosDeDistrito; // Todo los elementos son mayores a 0.
+    private int[] rangoMesasDistritos; // No hay repetidos, estan en orden ascendente y son todos valores mayores a 0.
+    private int[] votosPresidenciales; // Todos los elementos son mayores o iguales a 0 y su longitud es P
+    private int[][] votosDiputados; // La longitud es igual D, cada elemento tiene longitud P y cada subelemento de un elementom es mayor o igual a 0.
 
-    private int[] votosTotalesDiputados; // Indice es el distrito
-    private int votosTotalesPresidente;
+    private int[] votosTotalesDiputados; // Posee longitud D y cada elemento es la sumatoria de todos los valores en cada elemento de votosDiputados, tiene que ser mayor o igual a 0.
+    private int votosTotalesPresidente; // Es la sumatoria de todos los elementos de votosPresidenciales. Es mayor o igual a 0.
+
 
     private HeapSistema[] heapDhondt;
     private int[][] resultadosDhondt;
     private boolean[] hayResultadosDhondt;
-
     private int[] hayBallotageIndice;
 
     public class VotosPartido{
@@ -27,11 +27,9 @@ public class SistemaCNE {
         public int votosDiputados(){return diputados;}
     }
 
-    // Esto ya no es asi
-    // Con el doble for tenemos la complejidad O(P*D)
-    //La complejidad de SistemnaCNE es O(P+D) que pertene a O(P*D), debido a que primero incializamos los arrays que cuesta O(1), para luego realizar dos ciclos, no anidados, el cual el primero asigna los nombres de partidos que cuesta O(P) 
-    // y despues el ciclo que inserta todo lo relacionado a los diputados y los dristictos; que como cota de ciclo tiene a la longitud D luego cuesta O(D).
-    // Por lo tanto la suma de estos resultaria en O(D+P) y este pertenece a O(P*D) ya que este ultimo crece mucho mas rapido que el crecimiento lineal que tiene O(P+D).
+
+    //La complejidad de SistemnaCNE es O(P*D) ya que al incializar las variables poseemos operacion u O(P) u O(D) hasta  resultadosDhondt que es un matriz que al reservar memoria es P*D entonces este al ser el maximo el algoritmo pasa a tener complejidad O(P*D)
+    //Luego aplicamos un for con complejidad O(P) y luego uno con O(D). De todas estas operaciones solo importa O(P*D).
 
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
          
@@ -40,7 +38,7 @@ public class SistemaCNE {
         this.nombresPartidos = new String[nombresPartidos.length];
         this.nombresDistritos = new String[nombresDistritos.length];
         this.diputadosDeDistrito = new int[diputadosPorDistrito.length];
-        this.rangoMesasDistritos = new int[ultimasMesasDistritos.length];
+        this.rangoMesasDistritos = new int[nombresDistritos.length];
         
         this.votosPresidenciales = new int[nombresPartidos.length];
         this.votosDiputados = new int[nombresDistritos.length][nombresPartidos.length];
@@ -99,6 +97,9 @@ public class SistemaCNE {
         int high = rangoMesasDistritos.length;
         int low = 0;
         int actual = 0;
+
+        //Realiza busqueda binaria para hallar el id del districto.
+
         while(low != high) {
             actual = (high + low) / 2;
 
@@ -140,7 +141,7 @@ public class SistemaCNE {
         // Consigo el Id del districto.
         int idDis = obtenerIdDistrito(idMesa);
         
-        // Registra votos presidenciales
+        // Registra votos presidenciales 
         for (int idPartido=0; idPartido<actaMesa.length; idPartido++){
             votosDiputados[idDis][idPartido] += actaMesa[idPartido].diputados;
             votosPresidenciales[idPartido] += actaMesa[idPartido].presidente;
