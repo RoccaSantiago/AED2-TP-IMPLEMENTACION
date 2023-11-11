@@ -135,8 +135,9 @@ public class SistemaCNE {
        return nombresDistritos[obtenerIdDistrito(idMesa)];
     }
 
-    //Al hacer la asignacion de Ids usamos la funcion obtenerIdDistrito en la cual, como dijimos anteriormente, posee complejidad O(Log D).
+    // Al hacer la asignacion de Ids usamos la funcion obtenerIdDistrito en la cual, como dijimos anteriormente, posee complejidad O(Log D).
     // Para luego realizar un ciclo que tiene como cota P, ya que registramos los votos para todos los Ids de los partidos.
+    // La función maximos tiene complejidad O(P) y la creación del heap a través del arreglo tiene complejidad O(P) por utilizar algoritmo de Floyd.
     // Por lo tanto obtenemos O(Log D + P).
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
         
@@ -152,6 +153,7 @@ public class SistemaCNE {
             votosTotalesPresidente += actaMesa[idPartido].presidente;
         }
 
+        //Cada vez que se registra una mesa nueva actualizan los valores de hayBallotageIndice y del healDhondt del distrito
         hayBallotageIndice = maximos(votosPresidenciales);
         heapDhondt[idDis] = new HeapSistema(votosDiputados[idDis]);
     }
@@ -189,37 +191,44 @@ public class SistemaCNE {
     // ellas agregar al heap el valor asociado al calculo de Dhont que tiene complejidad O(log(P)). Entonces nos quda complejidad O(Dd*log(P)).
     public int[] resultadosDiputados(int idDistrito) {
 
+        // Verifica si la información del Dhondt ya fue calculada, para entregar la informacion guardada o calcularla.
         if (!hayResultadosDhondt[idDistrito]){
 
             int[] res = new int[this.nombresPartidos.length];
             double umbral = votosTotalesDiputados[idDistrito] * 0.03;
 
+            // Entra en un ciclo que entrega las bancas a los partidos según corresponda
             for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) {
                 int idGanador = heapDhondt[idDistrito].indiceMaximo();
                 int valorGanadorOriginal = heapDhondt[idDistrito].valorOriginalMaximo();
                 int valorGanador = heapDhondt[idDistrito].extraerMaximo();
 
+                // Si no se le han entregado bancas al partido que ganó comprueba que el partido pase el umbral y no represente los votos en blanco
                 if (res[idGanador] == 0) {
+
+                    //Si cumple le asigna una banca
                     if (valorGanador > umbral && idGanador != nombresPartidos.length - 1) {
                         res[idGanador] += 1;
                         heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador, valorGanadorOriginal);
                     }
+                    //Si no cumple lo elimina de la cuenta y reinicia el ciclo para darle la banca al siguiente
                     else {
                         i --;
                         heapDhondt[idDistrito].agregar(-1, idGanador, valorGanadorOriginal);
                     }
                 }
-
+                // Si ya se le asignó bancas anteriormente se sabe que pasa el umbral y no son los votos en blanco por lo que se le entrega una banca directamente
                 else {
                     res[idGanador] += 1;
                     heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador, valorGanadorOriginal);
                 }
             }
+            // Guarda el resultado del Dhondt y lo entrega
             resultadosDhondt[idDistrito] = res;
             hayResultadosDhondt[idDistrito] = true;
             return res;
         }
-
+        // Entrega el resultado directamente desde memoria
         else {
             int[] res = resultadosDhondt[idDistrito];
             return res;
@@ -246,16 +255,19 @@ public class SistemaCNE {
         }
     }
 
-
-
-
-    // Implementacion de Heap.
+    // Implementacion de Heap utilizado en el SistemaCNE
     private class HeapSistema {
-        private int[] heap;
-        private int[] indices;
-        private int[] valoresOriginales;
-        private int size;
+        private int[] heap; //Es una representación de un Arbol Heap que cumple con:
+                            //El nodo con mayor prioridad se encuentra en el indice 0
+                            //Es un arbol perfectamente balanceado
+                            //La prioridad de cada nodo es mayor o igual a las de sus hijos, si los tiene
+                            //Todo subarbol es a su vez un heap
+                            //Es izquierdista
+        private int[] indices; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0 y menores a su longitud.
+        private int[] valoresOriginales; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0
+        private int size; //Es mayor o igual a 0
     
+        // Utiliza algoritmo de Floyd para pasar de un array a un heap valido
         public HeapSistema(int[] array) {
             size = array.length;
             heap = new int[size];
@@ -274,8 +286,9 @@ public class SistemaCNE {
                 heapifyBajar(i);
             }
         }
-    
-        private int padre(int i) { // Tanto padre, izq y der pueden dar valores fuera del rango del array pero no es un problema por como están implementadas las demas funciones
+
+        // Tanto padre, izq y der pueden dar valores fuera del rango del array pero no es un problema por como están implementadas las demás funciones
+        private int padre(int i) {
             return (i-1) / 2;
         }
     
@@ -307,10 +320,12 @@ public class SistemaCNE {
     
         private void heapifySubir(int i) {
             int daddy = padre(i);
-            while (i > 0 && heap[i] > heap[daddy]) { // i > 0 porque izq(), padre() y der() a veces salen del rango del array, asi acoto
+            // i > 0 porque izq(), padre() y der() a veces salen del rango del array, así acoto
+            while (i > 0 && heap[i] > heap[daddy]) {
                 cambiar(i, daddy);
                 i = daddy;
-                daddy = padre(i);   // Cuando i llega a 0 padre(i) = 0
+                // Cuando i llega a 0 padre(i) = 0
+                daddy = padre(i);
             }
         }
     
@@ -335,7 +350,7 @@ public class SistemaCNE {
         
         public void agregar(int valor, int indice, int valorOriginal) {
             heap[size] = valor; // Agrega fuera del tamaño del array pero no de la capacidad del array
-            indices[size] = indice; //ASDFasfdfe
+            indices[size] = indice;
             valoresOriginales[size] = valorOriginal;
             size ++;
             heapifySubir(size - 1);
@@ -345,10 +360,12 @@ public class SistemaCNE {
             return indices[0];
         }
 
+        // Entrega el valro del máximo sin eliminar
         public int valorOriginalMaximo() {
             return valoresOriginales[0];
         }
-    
+        
+        // Popea el máximo del heap
         public int extraerMaximo() {
             int valorMaximo = heap[0];
             heap[0] = heap[size - 1];
