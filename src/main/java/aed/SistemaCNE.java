@@ -200,7 +200,7 @@ public class SistemaCNE {
             // Entra en un ciclo que entrega las bancas a los partidos según corresponda
             for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) {
                 int idGanador = heapDhondt[idDistrito].indiceMaximo();
-                int valorGanadorOriginal = heapDhondt[idDistrito].valorOriginalMaximo();
+                int valorGanadorOriginal = votosDiputados[idDistrito][idGanador];
                 int valorGanador = heapDhondt[idDistrito].extraerMaximo();
 
                 // Si no se le han entregado bancas al partido que ganó comprueba que el partido pase el umbral y no represente los votos en blanco
@@ -209,18 +209,18 @@ public class SistemaCNE {
                     //Si cumple le asigna una banca
                     if (valorGanador > umbral && idGanador != nombresPartidos.length - 1) {
                         res[idGanador] += 1;
-                        heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador, valorGanadorOriginal);
+                        heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador);
                     }
                     //Si no cumple lo elimina de la cuenta y reinicia el ciclo para darle la banca al siguiente
                     else {
                         i --;
-                        heapDhondt[idDistrito].agregar(-1, idGanador, valorGanadorOriginal);
+                        heapDhondt[idDistrito].agregar(-1, idGanador);
                     }
                 }
                 // Si ya se le asignó bancas anteriormente se sabe que pasa el umbral y no son los votos en blanco por lo que se le entrega una banca directamente
                 else {
                     res[idGanador] += 1;
-                    heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador, valorGanadorOriginal);
+                    heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador);
                 }
             }
             // Guarda el resultado del Dhondt y lo entrega
@@ -256,7 +256,7 @@ public class SistemaCNE {
     }
 
     // Implementacion de Heap utilizado en el SistemaCNE
-    private class HeapSistema {
+    public class HeapSistema {
         private int[] heap; //Es una representación de un Arbol Heap que cumple con:
                             //El nodo con mayor prioridad se encuentra en el indice 0
                             //Es un arbol perfectamente balanceado
@@ -264,7 +264,6 @@ public class SistemaCNE {
                             //Todo subarbol es a su vez un heap
                             //Es izquierdista
         private int[] indices; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0 y menores a su longitud.
-        private int[] valoresOriginales; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0
         private int size; //Es mayor o igual a 0
     
         // Utiliza algoritmo de Floyd para pasar de un array a un heap valido
@@ -275,11 +274,9 @@ public class SistemaCNE {
                 heap[i] = array[i];
             }
             indices = new int[size];
-            valoresOriginales = new int[size];
             
             for (int i = 0; i < size; i++) {
                 indices[i] = i;
-                valoresOriginales[i] = array[i];
             }
     
             for (int i = (size - 1)/ 2; i >= 0; i--) {
@@ -310,12 +307,6 @@ public class SistemaCNE {
             int aux2 = indices[i];
             indices[i] = indices[j];
             indices[j] = aux2;
-
-            // Cambio en valoresOriginales
-            int aux3 = valoresOriginales[i];
-            valoresOriginales[i] = valoresOriginales[j];
-            valoresOriginales[j] = aux3;
-
         }
     
         private void heapifySubir(int i) {
@@ -348,10 +339,9 @@ public class SistemaCNE {
             }
         }
         
-        public void agregar(int valor, int indice, int valorOriginal) {
+        public void agregar(int valor, int indice) {
             heap[size] = valor; // Agrega fuera del tamaño del array pero no de la capacidad del array
             indices[size] = indice;
-            valoresOriginales[size] = valorOriginal;
             size ++;
             heapifySubir(size - 1);
         }
@@ -359,18 +349,12 @@ public class SistemaCNE {
         public int indiceMaximo() {
             return indices[0];
         }
-
-        // Entrega el valro del máximo sin eliminar
-        public int valorOriginalMaximo() {
-            return valoresOriginales[0];
-        }
         
         // Popea el máximo del heap
         public int extraerMaximo() {
             int valorMaximo = heap[0];
             heap[0] = heap[size - 1];
             indices[0] = indices[size - 1];
-            valoresOriginales[0] = valoresOriginales[size - 1];
             size --;
             heapifyBajar(0);
             return valorMaximo;

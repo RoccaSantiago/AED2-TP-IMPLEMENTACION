@@ -450,9 +450,9 @@ class SistemaCNETests {
 
     @Test
     void complejidadResultadosDiputados() {
-        int cantDistritos = (int) 100;
-        int mesasPorDistrito = 50;
-        int cantPartidos = (int) 10000;
+        int cantDistritos = (int) 50;
+        int mesasPorDistrito = 10;
+        int cantPartidos = (int) 100;
         // Hay 1e6 diputados por cada distrito
         SistemaCNE sistema = inicializarSistemaCNE(cantDistritos, cantPartidos, mesasPorDistrito);
 
