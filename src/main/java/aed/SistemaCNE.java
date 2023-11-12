@@ -271,14 +271,17 @@ public class SistemaCNE {
         public HeapSistema(int[] array) {
             size = array.length;
             heap = new int[size];
-            indices = new int[size];
-            valoresOriginales = new int[size];
             for (int i = 0; i < size; i++) {
                 heap[i] = array[i];
+            }
+            indices = new int[size];
+            valoresOriginales = new int[size];
+            
+            for (int i = 0; i < size; i++) {
                 indices[i] = i;
                 valoresOriginales[i] = array[i];
             }
-            
+    
             for (int i = (size - 1)/ 2; i >= 0; i--) {
                 heapifyBajar(i);
             }
@@ -350,10 +353,7 @@ public class SistemaCNE {
             indices[size] = indice;
             valoresOriginales[size] = valorOriginal;
             size ++;
-            if(valor > valorOriginalMaximo()) {
-                heapifySubir(size - 1);
-            }
-            
+            heapifySubir(size - 1);
         }
 
         public int indiceMaximo() {
@@ -376,10 +376,5 @@ public class SistemaCNE {
             return valorMaximo;
         }
     }
-
-
-
-
-
 }
 
