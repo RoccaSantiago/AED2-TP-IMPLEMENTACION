@@ -1,10 +1,13 @@
 package aed;
 
+//! Estaria bueno que cada clase este en su propio archivo si no son triviales y/o muy cortas
+
 public class SistemaCNE {
 
     // D es igual a la cantidad de distritos y P igual a la cantidad de partidos.
 
     // El invariante de representacion  del modulo  es la sumatoria de las siguientes condiciones:
+    //! P y D no estan bien definidos, habria que definir los largos y cantidades en base al largo de alguno de los campos pero ok
     private String[] nombresPartidos;  // La longitud de nombresPartidos es P inclusive, los valores no pueden ser nulos y no hay repetidos.
     
     private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive, los valores no pueden ser nulos y no hay repetidos.
@@ -14,7 +17,6 @@ public class SistemaCNE {
     private int[] rangoMesasDistritos; // No hay repetidos, estan en orden ascendente y son todos valores mayores a 0.
     
     private int[] votosPresidenciales; // Todos los elementos son mayores o iguales a 0 y su longitud es P. 
-                                       // Cada índice es el total actual de votos de un partido a nivel nacional que se modifica con la operación registrar mesas
     
     private int[][] votosDiputados; // La longitud es igual D, cada elemento tiene longitud P y cada subelemento de un elemento es mayor o igual a 0.
                                     // Cada elemento corresponde a un distrito y cada subelemento corresponde a la sumatoria actual de votos de diputados de un partido del elemento.
@@ -32,48 +34,49 @@ public class SistemaCNE {
                                            // Para cada 0 <= i < longitud de hayResultadosDhondt se cumple que hayResultadosDhondt[i] == True si y solo si existe algun elemento en resultadosDhondt[i] que sea distinto a 0.
     
     private int[] hayBallotageIndice; // La longitud es igual a 2
+
                                       // hayBallotageIndice[0] es el indice del elemento maximo en votosPrecidenciales y hayBallotageIndice[1] es el indice del segundo elemento maximo en votosPrecidenciales, o ambos son 0.
 
     public class VotosPartido{
         private int presidente;
         private int diputados;
-        VotosPartido(int presidente, int diputados){this.presidente = presidente; this.diputados = diputados;}
-        public int votosPresidente(){return presidente;}
-        public int votosDiputados(){return diputados;}
+        VotosPartido(int presidente, int diputados){this.presidente = presidente; this.diputados = diputados;} //! Falta complejidad
+        public int votosPresidente(){return presidente;}//! Falta complejidad
+        public int votosDiputados(){return diputados;}//! Falta complejidad
     }
 
-
+    //! Estaría bueno poner en todas las líneas que no son O(1) su complejidad
     // La complejidad de SistemnaCNE es O(P*D) ya que al incializar las variables poseemos operacion u O(P) u O(D)
     // hasta resultadosDhondt que es un matriz que al reservar memoria, su complejidad sera de O(P*D).
     // Luego aplicamos un for con complejidad O(P) y luego uno con O(D). La complejidad mas alta termina siendo O(P*D).
     public SistemaCNE(String[] nombresDistritos, int[] diputadosPorDistrito, String[] nombresPartidos, int[] ultimasMesasDistritos) {
          
         //inicializacion de variables
-        this.nombresPartidos = new String[nombresPartidos.length];
-        this.nombresDistritos = new String[nombresDistritos.length];
-        this.diputadosDeDistrito = new int[diputadosPorDistrito.length];
-        this.rangoMesasDistritos = new int[nombresDistritos.length];
+        this.nombresPartidos = new String[nombresPartidos.length]; // O(P)
+        this.nombresDistritos = new String[nombresDistritos.length]; // O(D)
+        this.diputadosDeDistrito = new int[diputadosPorDistrito.length]; // O(D)
+        this.rangoMesasDistritos = new int[nombresDistritos.length]; // O(P)
         
-        this.votosPresidenciales = new int[nombresPartidos.length];
-        this.votosDiputados = new int[nombresDistritos.length][nombresPartidos.length];
+        this.votosPresidenciales = new int[nombresPartidos.length]; // O(P)
+        this.votosDiputados = new int[nombresDistritos.length][nombresPartidos.length]; // O(P*D)
 
-        this.votosTotalesDiputados = new int[nombresDistritos.length];
+        this.votosTotalesDiputados = new int[nombresDistritos.length]; // O(D)
         this.votosTotalesPresidente = 0;
 
-        this.heapDhondt = new HeapSistema[nombresDistritos.length];
-        this.resultadosDhondt = new int[nombresDistritos.length][nombresPartidos.length];
+        this.heapDhondt = new HeapSistema[nombresDistritos.length]; // O(D)
+        this.resultadosDhondt = new int[nombresDistritos.length][nombresPartidos.length]; // O(P*D)
 
-        this.hayResultadosDhondt = new boolean[nombresDistritos.length];
+        this.hayResultadosDhondt = new boolean[nombresDistritos.length]; // O(D)
 
         this.hayBallotageIndice = new int[2];
 
         // input de Partidos
-        for (int i = 0; i < nombresPartidos.length; i++) {
+        for (int i = 0; i < nombresPartidos.length; i++) { // O(P)
             this.nombresPartidos[i] = nombresPartidos[i];
         }
 
         // input de Distritos
-        for (int i = 0; i < nombresDistritos.length; i++) {
+        for (int i = 0; i < nombresDistritos.length; i++) { // O(D)
             this.nombresDistritos[i] = nombresDistritos[i];
             this.diputadosDeDistrito[i] = diputadosPorDistrito[i];
             this.rangoMesasDistritos[i] = ultimasMesasDistritos[i];
@@ -129,6 +132,7 @@ public class SistemaCNE {
         return actual;
     }
 
+    //! Por qué se multiplican las complejidades?
     // La complejidad de esta funcion es O(1) * complejidad de la auxiliar
     // O(1) * O(log(D)) = O(log(D))
     public String distritoDeMesa(int idMesa) {
@@ -153,7 +157,7 @@ public class SistemaCNE {
             votosTotalesPresidente += actaMesa[idPartido].presidente;
         }
 
-        //Cada vez que se registra una mesa nueva actualizan los valores de hayBallotageIndice y del healDhondt del distrito
+        //Cada vez que se registra una mesa nueva actualizan los valores de hayBallotageIndice y del heapDhondt del distrito
         hayBallotageIndice = maximos(votosPresidenciales);
         heapDhondt[idDis] = new HeapSistema(votosDiputados[idDis]);
     }
@@ -187,6 +191,7 @@ public class SistemaCNE {
         return votosDiputados[idDistrito][idPartido];
     }
     
+    //! No cumple la complejidad pedida
     // La complejidad de esta operación es O(Dd*log(P)) ya que tenemos que iterar Dd, la cantidad de bancas de un distrito y por cada una de 
     // ellas agregar al heap el valor asociado al calculo de Dhont que tiene complejidad O(log(P)). Entonces nos quda complejidad O(Dd*log(P)).
     public int[] resultadosDiputados(int idDistrito) {
@@ -194,11 +199,11 @@ public class SistemaCNE {
         // Verifica si la información del Dhondt ya fue calculada, para entregar la informacion guardada o calcularla.
         if (!hayResultadosDhondt[idDistrito]){
 
-            int[] res = new int[this.nombresPartidos.length];
+            int[] res = resultadosDhondt[idDistrito]; //- //! Esta operacion tiene complejidad P, ya es mayor a la pedida
             double umbral = votosTotalesDiputados[idDistrito] * 0.03;
 
             // Entra en un ciclo que entrega las bancas a los partidos según corresponda
-            for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) {
+            for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) { //!  Este ciclo podría hacer P*Dd iteraciones en peor caso, cuidado con eso de ignorar una iteración si no pasa el umbral
                 int idGanador = heapDhondt[idDistrito].indiceMaximo();
                 int valorGanadorOriginal = votosDiputados[idDistrito][idGanador];
                 int valorGanador = heapDhondt[idDistrito].extraerMaximo();
@@ -224,7 +229,7 @@ public class SistemaCNE {
                 }
             }
             // Guarda el resultado del Dhondt y lo entrega
-            resultadosDhondt[idDistrito] = res;
+            // resultadosDhondt[idDistrito] = res;
             hayResultadosDhondt[idDistrito] = true;
             return res;
         }
@@ -252,112 +257,6 @@ public class SistemaCNE {
         }
         else {
             return true;
-        }
-    }
-
-    // Implementacion de Heap utilizado en el SistemaCNE
-    public class HeapSistema {
-        private int[] heap; //Es una representación de un Arbol Heap que cumple con:
-                            //El nodo con mayor prioridad se encuentra en el indice 0
-                            //Es un arbol perfectamente balanceado
-                            //La prioridad de cada nodo es mayor o igual a las de sus hijos, si los tiene
-                            //Todo subarbol es a su vez un heap
-                            //Es izquierdista
-        private int[] indices; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0 y menores a su longitud.
-        private int size; //Es mayor o igual a 0
-    
-        // Utiliza algoritmo de Floyd para pasar de un array a un heap valido
-        public HeapSistema(int[] array) {
-            size = array.length;
-            heap = new int[size];
-            for (int i = 0; i < size; i++) {
-                heap[i] = array[i];
-            }
-            indices = new int[size];
-            
-            for (int i = 0; i < size; i++) {
-                indices[i] = i;
-            }
-    
-            for (int i = (size - 1)/ 2; i >= 0; i--) {
-                heapifyBajar(i);
-            }
-        }
-
-        // Tanto padre, izq y der pueden dar valores fuera del rango del array pero no es un problema por como están implementadas las demás funciones
-        private int padre(int i) {
-            return (i-1) / 2;
-        }
-    
-        private int izq(int i) {
-            return 2 * i + 1;
-        }
-    
-        private int der(int i) {
-            return 2 * i + 2;
-        }
-    
-        private void cambiar(int i, int j) {
-            // Cambio en heap
-            int aux1 = heap[i];
-            heap[i] = heap[j];
-            heap[j] = aux1;
-    
-            // Cambio en indices
-            int aux2 = indices[i];
-            indices[i] = indices[j];
-            indices[j] = aux2;
-        }
-    
-        private void heapifySubir(int i) {
-            int daddy = padre(i);
-            // i > 0 porque izq(), padre() y der() a veces salen del rango del array, así acoto
-            while (i > 0 && heap[i] > heap[daddy]) {
-                cambiar(i, daddy);
-                i = daddy;
-                // Cuando i llega a 0 padre(i) = 0
-                daddy = padre(i);
-            }
-        }
-    
-        private void heapifyBajar(int i) {
-            int indiceMaximo = i;
-            int izquierda = izq(i);
-            int derecha = der(i);
-    
-            if (izquierda < size && heap[izquierda] > heap[indiceMaximo]) {
-                indiceMaximo = izquierda;
-            }
-    
-            if (derecha < size && heap[derecha] > heap[indiceMaximo]) { // Es un if y no un else if porque tambien quiero comparar el nodo izq con el der si es el caso
-                indiceMaximo = derecha;
-            }
-    
-            if (i != indiceMaximo) { // Entra acá solo si es que cambia de indice, si no se acaba la recursión
-                cambiar(i, indiceMaximo);
-                heapifyBajar(indiceMaximo); // El elemento va a intentar seguir bajando hasta que no pueda más
-            }
-        }
-        
-        public void agregar(int valor, int indice) {
-            heap[size] = valor; // Agrega fuera del tamaño del array pero no de la capacidad del array
-            indices[size] = indice;
-            size ++;
-            heapifySubir(size - 1);
-        }
-
-        public int indiceMaximo() {
-            return indices[0];
-        }
-        
-        // Popea el máximo del heap
-        public int extraerMaximo() {
-            int valorMaximo = heap[0];
-            heap[0] = heap[size - 1];
-            indices[0] = indices[size - 1];
-            size --;
-            heapifyBajar(0);
-            return valorMaximo;
         }
     }
 }

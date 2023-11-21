@@ -9,21 +9,23 @@ public class HeapSistema {
                             //Es izquierdista
         private int[] indices; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0 y menores a su longitud.
         private int size; //Es mayor o igual a 0
+        //! Faltaría decir cuanto vale size en el irep //-????????
     
-        // Utiliza algoritmo de Floyd para pasar de un array a un heap valido
+        //- //! Falta dar la complejidad de esto
+        // Utiliza algoritmo de Floyd para pasar de un array a un heap valido por lo que es complejidad O(n)
         public HeapSistema(int[] array) {
             size = array.length;
             heap = new int[size];
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++) { // O(n)
                 heap[i] = array[i];
             }
-            indices = new int[size];
+            indices = new int[size]; // O(n)
             
-            for (int i = 0; i < size; i++) {
+            for (int i = 0; i < size; i++) { // O(n)
                 indices[i] = i;
             }
     
-            for (int i = (size - 1)/ 2; i >= 0; i--) {
+            for (int i = (size - 1)/ 2; i >= 0; i--) { // Por el analisis de la teorica esto es O(n)
                 heapifyBajar(i);
             }
         }
@@ -41,7 +43,7 @@ public class HeapSistema {
             return 2 * i + 2;
         }
     
-        private void cambiar(int i, int j) {
+        private void cambiar(int i, int j) { // Son 6 asignaciones que cada una es O(1) por lo que la complejidad es O(1) //- //! Falta complejidad
             // Cambio en heap
             int aux1 = heap[i];
             heap[i] = heap[j];
@@ -53,10 +55,10 @@ public class HeapSistema {
             indices[j] = aux2;
         }
     
-        private void heapifySubir(int i) {
-            int daddy = padre(i);
+        private void heapifySubir(int i) { // O(log(n))
+            int daddy = padre(i); // O(1)
             // i > 0 porque izq(), padre() y der() a veces salen del rango del array, así acoto
-            while (i > 0 && heap[i] > heap[daddy]) {
+            while (i > 0 && heap[i] > heap[daddy]) { 
                 cambiar(i, daddy);
                 i = daddy;
                 // Cuando i llega a 0 padre(i) = 0
@@ -64,7 +66,8 @@ public class HeapSistema {
             }
         }
     
-        private void heapifyBajar(int i) {
+        //- //! Falta complejidad
+        private void heapifyBajar(int i) { // Complejidad O(log(n))
             int indiceMaximo = i;
             int izquierda = izq(i);
             int derecha = der(i);
@@ -83,19 +86,22 @@ public class HeapSistema {
             }
         }
         
-        public void agregar(int valor, int indice) {
+        //- //! Falta complejidad
+        public void agregar(int valor, int indice) { // Complejidad O(log(n))
             heap[size] = valor; // Agrega fuera del tamaño del array pero no de la capacidad del array
             indices[size] = indice;
             size ++;
             heapifySubir(size - 1);
         }
 
-        public int indiceMaximo() {
+        //- //! Falta complejidad
+        public int indiceMaximo() { // Complejidad O(1)
             return indices[0];
         }
         
+        //- //! Falta complejidad
         // Popea el máximo del heap
-        public int extraerMaximo() {
+        public int extraerMaximo() { // Complejidad O(log(n))
             int valorMaximo = heap[0];
             heap[0] = heap[size - 1];
             indices[0] = indices[size - 1];
