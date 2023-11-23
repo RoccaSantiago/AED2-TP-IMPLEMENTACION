@@ -4,10 +4,12 @@ package aed;
 
 public class SistemaCNE {
 
-    // D es igual a la cantidad de distritos y P igual a la cantidad de partidos.
+    
 
     // El invariante de representacion  del modulo  es la sumatoria de las siguientes condiciones:
-    //! P y D no estan bien definidos, habria que definir los largos y cantidades en base al largo de alguno de los campos pero ok
+    //! P y D no estan bien definidos, habria que definir los largos y cantidades en base al largo de alguno de los campos pero ok (x)
+    // 1 <= D  
+    // 2 <= P
     private String[] nombresPartidos;  // La longitud de nombresPartidos es P inclusive, los valores no pueden ser nulos y no hay repetidos.
     
     private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive, los valores no pueden ser nulos y no hay repetidos.
@@ -40,12 +42,13 @@ public class SistemaCNE {
     public class VotosPartido{
         private int presidente;
         private int diputados;
-        VotosPartido(int presidente, int diputados){this.presidente = presidente; this.diputados = diputados;} //! Falta complejidad
-        public int votosPresidente(){return presidente;}//! Falta complejidad
-        public int votosDiputados(){return diputados;}//! Falta complejidad
+        VotosPartido(int presidente, int diputados)
+        {this.presidente = presidente; this.diputados = diputados;} // O(1)
+        public int votosPresidente(){return presidente;}// O(1)
+        public int votosDiputados(){return diputados;}// O(1)
     }
 
-    //! Estaría bueno poner en todas las líneas que no son O(1) su complejidad
+    //! Estaría bueno poner en todas las líneas que no son O(1) su complejidad (x)
     // La complejidad de SistemnaCNE es O(P*D) ya que al incializar las variables poseemos operacion u O(P) u O(D)
     // hasta resultadosDhondt que es un matriz que al reservar memoria, su complejidad sera de O(P*D).
     // Luego aplicamos un for con complejidad O(P) y luego uno con O(D). La complejidad mas alta termina siendo O(P*D).
@@ -132,9 +135,9 @@ public class SistemaCNE {
         return actual;
     }
 
-    //! Por qué se multiplican las complejidades?
-    // La complejidad de esta funcion es O(1) * complejidad de la auxiliar
-    // O(1) * O(log(D)) = O(log(D))
+    //! Por qué se multiplican las complejidades? (x)
+    // La complejidad de esta funcion es O(1) sumado a la complejidad de la auxiliar
+    // O(1) + O(log(D)) = O(log(D)) ya que O(1) pertenece a O(log(D))
     public String distritoDeMesa(int idMesa) {
        return nombresDistritos[obtenerIdDistrito(idMesa)];
     }
@@ -199,11 +202,11 @@ public class SistemaCNE {
         // Verifica si la información del Dhondt ya fue calculada, para entregar la informacion guardada o calcularla.
         if (!hayResultadosDhondt[idDistrito]){
 
-            int[] res = resultadosDhondt[idDistrito]; //- //! Esta operacion tiene complejidad P, ya es mayor a la pedida
+            int[] res = resultadosDhondt[idDistrito]; //! Esta operacion tiene complejidad P, ya es mayor a la pedida (x)
             double umbral = votosTotalesDiputados[idDistrito] * 0.03;
 
             // Entra en un ciclo que entrega las bancas a los partidos según corresponda
-            for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) { //!  Este ciclo podría hacer P*Dd iteraciones en peor caso, cuidado con eso de ignorar una iteración si no pasa el umbral
+            for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) { //! Este ciclo podría hacer P*Dd iteraciones en peor caso, cuidado con eso de ignorar una iteración si no pasa el umbral
                 int idGanador = heapDhondt[idDistrito].indiceMaximo();
                 int valorGanadorOriginal = votosDiputados[idDistrito][idGanador];
                 int valorGanador = heapDhondt[idDistrito].extraerMaximo();
@@ -218,7 +221,7 @@ public class SistemaCNE {
                     }
                     //Si no cumple lo elimina de la cuenta y reinicia el ciclo para darle la banca al siguiente
                     else {
-                        i --;
+                        i--;
                         heapDhondt[idDistrito].agregar(-1, idGanador);
                     }
                 }
