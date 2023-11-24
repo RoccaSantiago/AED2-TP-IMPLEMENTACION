@@ -36,7 +36,6 @@ public class SistemaCNE {
                                            // Para cada 0 <= i < longitud de hayResultadosDhondt se cumple que hayResultadosDhondt[i] == True si y solo si existe algun elemento en resultadosDhondt[i] que sea distinto a 0.
     
     private int[] hayBallotageIndice; // La longitud es igual a 2
-
                                       // hayBallotageIndice[0] es el indice del elemento maximo en votosPrecidenciales y hayBallotageIndice[1] es el indice del segundo elemento maximo en votosPrecidenciales, o ambos son 0.
 
     public class VotosPartido{
@@ -161,11 +160,27 @@ public class SistemaCNE {
         }
 
         //Cada vez que se registra una mesa nueva actualizan los valores de hayBallotageIndice y del heapDhondt del distrito
-        hayBallotageIndice = maximos(votosPresidenciales);
-        heapDhondt[idDis] = new HeapSistema(votosDiputados[idDis]);
+        hayBallotageIndice = maximos(votosPresidenciales); //O(P)
+
+        double umbral = votosTotalesDiputados[idDis] * 0.03;
+        
+        int[] partidosSobreUmbral = new int[nombresPartidos.length]; //O(P)
+
+        for (int i = 0; i < nombresPartidos.length; i++){ //O(P)
+            if (votosDiputados[idDis][i] > umbral) {
+                partidosSobreUmbral[i] = votosDiputados[idDis][i];
+            }
+            else {
+                partidosSobreUmbral[i] = -1;
+            }
+        }
+
+        partidosSobreUmbral[partidosSobreUmbral.length - 1] = -1;
+
+        heapDhondt[idDis] = new HeapSistema(partidosSobreUmbral); //O(P)
     }
 
-    private int[] maximos(int[] array) {
+    private int[] maximos(int[] array) { // O(n) donde n es el tamaño del array, como solo se usa con array tamaño P entonces es O(P)
         int[] res = new int[2];
         int max1 = 0;
         int max2 = 0;
@@ -203,36 +218,18 @@ public class SistemaCNE {
         if (!hayResultadosDhondt[idDistrito]){
 
             int[] res = resultadosDhondt[idDistrito]; //! Esta operacion tiene complejidad P, ya es mayor a la pedida (x)
-            double umbral = votosTotalesDiputados[idDistrito] * 0.03;
 
             // Entra en un ciclo que entrega las bancas a los partidos según corresponda
             for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) { //! Este ciclo podría hacer P*Dd iteraciones en peor caso, cuidado con eso de ignorar una iteración si no pasa el umbral
                 int idGanador = heapDhondt[idDistrito].indiceMaximo();
                 int valorGanadorOriginal = votosDiputados[idDistrito][idGanador];
-                int valorGanador = heapDhondt[idDistrito].extraerMaximo();
+                heapDhondt[idDistrito].extraerMaximo(); //O(log(P))
 
-                // Si no se le han entregado bancas al partido que ganó comprueba que el partido pase el umbral y no represente los votos en blanco
-                if (res[idGanador] == 0) {
+                res[idGanador] += 1;
+                heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador); //O(log(P))
 
-                    //Si cumple le asigna una banca
-                    if (valorGanador > umbral && idGanador != nombresPartidos.length - 1) {
-                        res[idGanador] += 1;
-                        heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador);
-                    }
-                    //Si no cumple lo elimina de la cuenta y reinicia el ciclo para darle la banca al siguiente
-                    else {
-                        i--;
-                        heapDhondt[idDistrito].agregar(-1, idGanador);
-                    }
-                }
-                // Si ya se le asignó bancas anteriormente se sabe que pasa el umbral y no son los votos en blanco por lo que se le entrega una banca directamente
-                else {
-                    res[idGanador] += 1;
-                    heapDhondt[idDistrito].agregar(valorGanadorOriginal/(res[idGanador] + 1), idGanador);
-                }
             }
             // Guarda el resultado del Dhondt y lo entrega
-            // resultadosDhondt[idDistrito] = res;
             hayResultadosDhondt[idDistrito] = true;
             return res;
         }
