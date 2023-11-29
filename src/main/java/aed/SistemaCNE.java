@@ -138,7 +138,8 @@ public class SistemaCNE {
     // La complejidad de esta funcion es O(1) sumado a la complejidad de la auxiliar
     // O(1) + O(log(D)) = O(log(D)) ya que O(1) pertenece a O(log(D))
     public String distritoDeMesa(int idMesa) {
-       return nombresDistritos[obtenerIdDistrito(idMesa)];
+        int id = obtenerIdDistrito(idMesa); // O(log(D))
+        return nombresDistritos[id]; // O(1)
     }
 
     // Al hacer la asignacion de Ids usamos la funcion obtenerIdDistrito en la cual, como dijimos anteriormente, posee complejidad O(Log D).
@@ -148,10 +149,10 @@ public class SistemaCNE {
     public void registrarMesa(int idMesa, VotosPartido[] actaMesa) {
         
         // Consigo el Id del districto.
-        int idDis = obtenerIdDistrito(idMesa);
+        int idDis = obtenerIdDistrito(idMesa); // O(log(D))
         
         // Registra votos presidenciales 
-        for (int idPartido=0; idPartido<actaMesa.length; idPartido++){
+        for (int idPartido=0; idPartido<actaMesa.length; idPartido++){ // O(P)
             votosDiputados[idDis][idPartido] += actaMesa[idPartido].diputados;
             votosPresidenciales[idPartido] += actaMesa[idPartido].presidente;
 
@@ -209,7 +210,7 @@ public class SistemaCNE {
         return votosDiputados[idDistrito][idPartido];
     }
     
-    //! No cumple la complejidad pedida
+    //! No cumple la complejidad pedida (x)
     // La complejidad de esta operación es O(Dd*log(P)) ya que tenemos que iterar Dd, la cantidad de bancas de un distrito y por cada una de 
     // ellas agregar al heap el valor asociado al calculo de Dhont que tiene complejidad O(log(P)). Entonces nos quda complejidad O(Dd*log(P)).
     public int[] resultadosDiputados(int idDistrito) {
