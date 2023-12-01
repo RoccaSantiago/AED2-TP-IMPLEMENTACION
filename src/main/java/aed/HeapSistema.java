@@ -9,10 +9,8 @@ public class HeapSistema {
                             //Es izquierdista
         private int[] indices; //Tiene la misma longitud que heap, todos sus valores son mayores o iguales a 0 y menores a su longitud.
         private int size; //Es mayor o igual a 0 y menor igual a la longitud del heap
-        //! Faltaría decir cuanto vale size en el irep
     
-        //! Falta dar la complejidad de esto (x)
-        // Utiliza algoritmo de Floyd para pasar de un array a un heap valido por lo que es complejidad O(n)
+        // Utiliza algoritmo de Floyd para pasar de un array a un heap valido, por lo que es complejidad O(n)
         public HeapSistema(int[] array) {
             size = array.length;
             heap = new int[size]; // O(n)
@@ -43,7 +41,8 @@ public class HeapSistema {
             return 2 * i + 2;
         }
     
-        private void cambiar(int i, int j) { // Son 6 asignaciones que cada una es O(1) por lo que la complejidad es O(1) //! Falta complejidad (x)
+        // Son 6 asignaciones que cada una es O(1), por lo que la complejidad es O(1)
+        private void cambiar(int i, int j) {
             // Cambio en heap
             int aux1 = heap[i];
             heap[i] = heap[j];
@@ -66,7 +65,6 @@ public class HeapSistema {
             }
         }
     
-        //! Falta complejidad (x)
         private void heapifyBajar(int i) { // Complejidad O(log(n))
             int indiceMaximo = i;
             int izquierda = izq(i);
@@ -86,20 +84,16 @@ public class HeapSistema {
             }
         }
         
-        //! Falta complejidad (x)
         public void agregar(int valor, int indice) { // Complejidad O(log(n))
             heap[size] = valor; // Agrega fuera del tamaño del array pero no de la capacidad del array
             indices[size] = indice;
             size ++;
             heapifySubir(size - 1);
         }
-
-        //! Falta complejidad (x)
         public int indiceMaximo() { // Complejidad O(1)
             return indices[0];
         }
         
-        //! Falta complejidad (x)
         // Popea el máximo del heap
         public int extraerMaximo() { // Complejidad O(log(n))
             int valorMaximo = heap[0];

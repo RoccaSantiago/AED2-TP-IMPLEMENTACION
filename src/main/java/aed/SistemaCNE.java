@@ -1,18 +1,14 @@
 package aed;
 
-//! Estaria bueno que cada clase este en su propio archivo si no son triviales y/o muy cortas
 
 public class SistemaCNE {
 
     
 
-    // El invariante de representacion  del modulo  es la sumatoria de las siguientes condiciones:
-    //! P y D no estan bien definidos, habria que definir los largos y cantidades en base al largo de alguno de los campos pero ok (x)
-    // 1 <= D  
-    // 2 <= P
-    private String[] nombresPartidos;  // La longitud de nombresPartidos es P inclusive, los valores no pueden ser nulos y no hay repetidos.
+    // El invariante de representacion  del modulo  es el conjunto de las siguientes condiciones:
+    private String[] nombresPartidos;  // La longitud de nombresPartidos la definimos como P, P es mayor igual a 2, los valores no pueden ser nulos y no hay repetidos.
     
-    private String[] nombresDistritos; // La longitud de nombresPartidos es D inclusive, los valores no pueden ser nulos y no hay repetidos.
+    private String[] nombresDistritos; // La longitud de nombresDartidos la definimos como D, D es mayor igual a 1, los valores no pueden ser nulos y no hay repetidos.
     
     private int[] diputadosDeDistrito; // La longitud es igual a D, todo los elementos son mayores o iguales 0.
     
@@ -47,7 +43,6 @@ public class SistemaCNE {
         public int votosDiputados(){return diputados;}// O(1)
     }
 
-    //! Estaría bueno poner en todas las líneas que no son O(1) su complejidad (x)
     // La complejidad de SistemnaCNE es O(P*D) ya que al incializar las variables poseemos operacion u O(P) u O(D)
     // hasta resultadosDhondt que es un matriz que al reservar memoria, su complejidad sera de O(P*D).
     // Luego aplicamos un for con complejidad O(P) y luego uno con O(D). La complejidad mas alta termina siendo O(P*D).
@@ -134,7 +129,6 @@ public class SistemaCNE {
         return actual;
     }
 
-    //! Por qué se multiplican las complejidades? (x)
     // La complejidad de esta funcion es O(1) sumado a la complejidad de la auxiliar
     // O(1) + O(log(D)) = O(log(D)) ya que O(1) pertenece a O(log(D))
     public String distritoDeMesa(int idMesa) {
@@ -202,7 +196,7 @@ public class SistemaCNE {
 
     // Es O(1) ya que votosDiputados es un array el cual tiene reservado en memoria todos los id. Por lo que acceder a cualquier id cuesta O(1).
     public int votosPresidenciales(int idPartido) {
-        return votosPresidenciales[idPartido];  
+        return votosPresidenciales[idPartido];
     }
 
     // Es O(1) ya que votosDiputados es un array de arrays el cual tiene reservado en memoria todos los id de distritos y partidos. Por lo que acceder a cualquier id cuesta O(1).
@@ -210,7 +204,6 @@ public class SistemaCNE {
         return votosDiputados[idDistrito][idPartido];
     }
     
-    //! No cumple la complejidad pedida (x)
     // La complejidad de esta operación es O(Dd*log(P)) ya que tenemos que iterar Dd, la cantidad de bancas de un distrito y por cada una de 
     // ellas agregar al heap el valor asociado al calculo de Dhont que tiene complejidad O(log(P)). Entonces nos quda complejidad O(Dd*log(P)).
     public int[] resultadosDiputados(int idDistrito) {
@@ -218,10 +211,10 @@ public class SistemaCNE {
         // Verifica si la información del Dhondt ya fue calculada, para entregar la informacion guardada o calcularla.
         if (!hayResultadosDhondt[idDistrito]){
 
-            int[] res = resultadosDhondt[idDistrito]; //! Esta operacion tiene complejidad P, ya es mayor a la pedida (x)
+            int[] res = resultadosDhondt[idDistrito];
 
             // Entra en un ciclo que entrega las bancas a los partidos según corresponda
-            for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) { //! Este ciclo podría hacer P*Dd iteraciones en peor caso, cuidado con eso de ignorar una iteración si no pasa el umbral
+            for (int i = 0; i < this.diputadosDeDistrito[idDistrito]; i++) { // Dd veces log(P) entonces complejidad O(Dd*log(P))
                 int idGanador = heapDhondt[idDistrito].indiceMaximo();
                 int valorGanadorOriginal = votosDiputados[idDistrito][idGanador];
                 heapDhondt[idDistrito].extraerMaximo(); //O(log(P))
@@ -242,7 +235,7 @@ public class SistemaCNE {
 
     }
 
-    // Es O(1) ya solo se realizan accesos a arrays que ya estan en memorias y otras operaciones O(1).
+    // Es O(1), ya que solo se realizan accesos a arrays que ya estan en memorias y otras operaciones O(1).
     public boolean hayBallotage() {
         int votosTotales = votosTotalesPresidente;
         int max1 = votosPresidenciales[hayBallotageIndice[0]];
